@@ -1,0 +1,20 @@
+# Render deployment configuration (optional)
+# If you use this file, create a Web Service from the repo root
+# instead of pointing Root Directory to /server
+
+services:
+  - type: web
+    name: ai-wedding-backend
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        sync: false
+      - key: CLIENT_URL
+        sync: false

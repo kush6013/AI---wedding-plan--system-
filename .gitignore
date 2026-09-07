@@ -1,0 +1,31 @@
+# =====================================================
+# ROOT .gitignore - ignores files that should never be committed
+# =====================================================
+
+# Dependencies
+node_modules/
+
+# Environment variables (NEVER commit these!)
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# Editor files
+.vscode/
+.idea/
+.DS_Store
+
+# Vercel / Render local caches
+.vercel/
+
+# Test coverage
+coverage/
