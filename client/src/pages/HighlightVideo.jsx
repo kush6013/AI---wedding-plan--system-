@@ -7,9 +7,11 @@ import {
   getWeddingById,
   getWeddingVideoPlans,
   generateHighlightVideoPlan,
+  deleteVideoPlan,
 } from '../services/api';
 import Button from '../components/Button';
 import Loading from '../components/Loading';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 const HighlightVideo = () => {
   const { id } = useParams(); // wedding ID from URL
@@ -20,6 +22,8 @@ const HighlightVideo = () => {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
+  const [planToDelete, setPlanToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Fetch wedding details and existing highlight plans
   useEffect(() => {
@@ -69,6 +73,36 @@ const HighlightVideo = () => {
 
   const viewPlan = (plan) => {
     setResult(plan);
+  };
+
+  // Show the confirmation dialog for a plan the user wants to delete
+  const askDelete = (plan) => {
+    setPlanToDelete(plan);
+  };
+
+  // Delete the chosen plan after the user confirms
+  const handleDelete = async () => {
+    if (!planToDelete) return;
+
+    try {
+      setDeleting(true);
+      setError('');
+      await deleteVideoPlan(planToDelete._id);
+
+      // Remove the deleted plan from the list (filter keeps everything except it)
+      setPlans(plans.filter((p) => p._id !== planToDelete._id));
+
+      // If the plan that was being viewed got deleted, clear the result panel
+      if (result && result._id === planToDelete._id) {
+        setResult(null);
+      }
+
+      setPlanToDelete(null);
+    } catch (err) {
+      setError(err.message || 'Unable to delete video plan. Please try again.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const renderList = (items) => {
@@ -266,7 +300,7 @@ const HighlightVideo = () => {
           <h2>Saved Highlight Plans ({plans.length})</h2>
           <div className="saved-plans-grid">
             {plans.map((plan) => (
-              <button
+              <div
                 key={plan._id}
                 className="saved-plan-card"
                 onClick={() => viewPlan(plan)}
@@ -284,12 +318,34 @@ const HighlightVideo = () => {
                     year: 'numeric',
                   })}
                 </div>
-                <span className="view-now">Click to view</span>
-              </button>
+                <div className="saved-plan-actions">
+                  <span className="view-now">Click to view</span>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    disabled={deleting}
+                    onClick={(e) => {
+                      e.stopPropagation(); // don't open the plan, only delete
+                      askDelete(plan);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       )}
+
+      {/* Confirmation dialog shown when the user clicks Delete */}
+      <ConfirmDialog
+        open={!!planToDelete}
+        title="Delete Highlight Plan"
+        message="Are you sure you want to delete this saved highlight plan? This action cannot be undone."
+        onCancel={() => setPlanToDelete(null)}
+        onConfirm={handleDelete}
+        confirming={deleting}
+      />
     </div>
   );
 };

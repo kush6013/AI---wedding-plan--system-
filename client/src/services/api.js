@@ -143,6 +143,20 @@ export const getWeddingAlbumDesigns = (weddingId) => {
   return apiRequest(`/weddings/${weddingId}/album-designs`);
 };
 
+// Delete a saved video plan by ID
+export const deleteVideoPlan = (id) => {
+  return apiRequest(`/video-plans/${id}`, {
+    method: 'DELETE',
+  });
+};
+
+// Delete a saved album design by ID
+export const deleteAlbumDesign = (id) => {
+  return apiRequest(`/album-designs/${id}`, {
+    method: 'DELETE',
+  });
+};
+
 // Health check
 export const healthCheck = () => {
   return apiRequest('/health');

@@ -1332,6 +1332,62 @@ td:last-child, th:last-child {
   font-weight: 500;
 }
 
+.saved-plan-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.saved-plan-actions .view-now {
+  margin-top: 0;
+}
+
+/* =====================
+   CONFIRMATION DIALOG
+   ===================== */
+
+/* Dark overlay behind the dialog box */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* The white dialog box itself */
+.dialog {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+  font-family: var(--font-body);
+}
+
+.dialog-title {
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+  color: var(--color-secondary);
+}
+
+.dialog-message {
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+  margin-bottom: 20px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 /* =====================================================
    ERROR PAGE
    ===================================================== */

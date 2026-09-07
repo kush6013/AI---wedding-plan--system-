@@ -7,9 +7,11 @@ import {
   getWeddingById,
   getWeddingAlbumDesigns,
   generateAlbumDesign,
+  deleteAlbumDesign,
 } from '../services/api';
 import Button from '../components/Button';
 import Loading from '../components/Loading';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 const AlbumDesign = () => {
   const { id } = useParams(); // wedding ID from URL
@@ -20,6 +22,8 @@ const AlbumDesign = () => {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
+  const [designToDelete, setDesignToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Fetch wedding details and existing album designs
   useEffect(() => {
@@ -64,6 +68,36 @@ const AlbumDesign = () => {
 
   const viewDesign = (design) => {
     setResult(design);
+  };
+
+  // Show the confirmation dialog for a design the user wants to delete
+  const askDelete = (design) => {
+    setDesignToDelete(design);
+  };
+
+  // Delete the chosen design after the user confirms
+  const handleDelete = async () => {
+    if (!designToDelete) return;
+
+    try {
+      setDeleting(true);
+      setError('');
+      await deleteAlbumDesign(designToDelete._id);
+
+      // Remove the deleted design from the list (filter keeps everything except it)
+      setDesigns(designs.filter((d) => d._id !== designToDelete._id));
+
+      // If the design that was being viewed got deleted, clear the result panel
+      if (result && result._id === designToDelete._id) {
+        setResult(null);
+      }
+
+      setDesignToDelete(null);
+    } catch (err) {
+      setError(err.message || 'Unable to delete album design. Please try again.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const renderList = (items) => {
@@ -243,7 +277,7 @@ const AlbumDesign = () => {
           <h2>Saved Album Designs ({designs.length})</h2>
           <div className="saved-plans-grid">
             {designs.map((design) => (
-              <button
+              <div
                 key={design._id}
                 className="saved-plan-card"
                 onClick={() => viewDesign(design)}
@@ -261,12 +295,34 @@ const AlbumDesign = () => {
                     year: 'numeric',
                   })}
                 </div>
-                <span className="view-now">Click to view</span>
-              </button>
+                <div className="saved-plan-actions">
+                  <span className="view-now">Click to view</span>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    disabled={deleting}
+                    onClick={(e) => {
+                      e.stopPropagation(); // don't open the design, only delete
+                      askDelete(design);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       )}
+
+      {/* Confirmation dialog shown when the user clicks Delete */}
+      <ConfirmDialog
+        open={!!designToDelete}
+        title="Delete Album Design"
+        message="Are you sure you want to delete this saved album design? This action cannot be undone."
+        onCancel={() => setDesignToDelete(null)}
+        onConfirm={handleDelete}
+        confirming={deleting}
+      />
     </div>
   );
 };

@@ -12,6 +12,7 @@ const weddingRoutes = require('./routes/weddingRoutes');
 const functionRoutes = require('./routes/functionRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const albumRoutes = require('./routes/albumRoutes');
+const videoPlanRoutes = require('./routes/videoPlanRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 // Create Express application
@@ -56,6 +57,10 @@ app.use('/api/weddings', weddingRoutes);
 app.use('/api/functions', functionRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/albums', albumRoutes);
+// Separate mount for album designs so DELETE /api/album-designs/:id works
+// (mirrors the video plans endpoint naming)
+app.use('/api/album-designs', albumRoutes);
+app.use('/api/video-plans', videoPlanRoutes);
 app.use('/api/users', userRoutes);
 
 // =====================
